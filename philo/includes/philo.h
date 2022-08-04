@@ -6,7 +6,7 @@
 /*   By: ede-alme <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/27 10:35:25 by ede-alme          #+#    #+#             */
-/*   Updated: 2022/08/04 11:39:49 by ede-alme         ###   ########.fr       */
+/*   Updated: 2022/08/04 16:08:05 by ede-alme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 # include "unistd.h"
 # include "stdlib.h"
 # include "stdio.h"
-# include "time.h"
+# include "sys/time.h"
 # include "pthread.h"
 
 typedef struct s_var {
@@ -28,15 +28,18 @@ typedef struct s_var {
 }		t_var;
 
 typedef struct s_philo {
-	int	id;
-	int	forks;
-	int	life;
-	int	eat_exec;
+	pthread_t	thread;
+	int			id;
+	int			forks;
+	int			life;
+	int			eat_exec;
+
 }		t_philo;
 
 typedef struct s_data {
-	t_var	var;
-	t_philo	*philo;
+	t_var		var;
+	t_philo		*philo;
+	int			time;
 }			t_data;
 
 #endif

@@ -6,7 +6,7 @@
 #    By: ede-alme <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/27 08:39:14 by ede-alme          #+#    #+#              #
-#    Updated: 2022/08/04 11:07:24 by ede-alme         ###   ########.fr        #
+#    Updated: 2022/08/04 15:36:40 by ede-alme         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,7 @@ SRC = $(addprefix $(SRC_PATH), $(SRC_NAME))
 OBJ = $(addprefix $(OBJ_PATH), $(OBJ_NAME))
 
 CC = gcc
-CFLAGS = -fsanitize=$(FLAG) -pthread -Wall -Wextra -Werror
+CFLAGS = -g -fsanitize=$(FLAG) -pthread -Wall -Wextra -Werror
 FLAG = thread
 
 ARGS = 5 100 30 30
@@ -38,7 +38,7 @@ $(NAME): $(OBJ)
 
 all: $(NAME)
 valgrind: fclean 
-	$(CC) -g -Wall -Wextra -Werror -I $(INC_PATH) $(SRC) -o ./philo
+	gcc -g -Wall -Wextra -Werror -pthread -I $(INC_PATH) $(SRC) -o ./philo
 	valgrind -s --leak-check=full --show-leak-kinds=all ./philo $(ARGS)
 	@echo "---> Finished valgrind test with $(ARGS) ARGS <---"
 
