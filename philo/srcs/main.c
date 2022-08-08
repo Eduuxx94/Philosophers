@@ -6,7 +6,7 @@
 /*   By: ede-alme <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 20:05:52 by ede-alme          #+#    #+#             */
-/*   Updated: 2022/08/06 15:14:59 by ede-alme         ###   ########.fr       */
+/*   Updated: 2022/08/08 19:21:56 by ede-alme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,24 +14,9 @@
 
 int	ft_time(t_data *d)
 {
-	if (d)
-		gettimeofday(&d->time, NULL);
-	return ((d->time.tv_usec - d->start_time) / 1000);
-}
-
-void	*ft_thread_run(void *dcopy)
-{
-	t_data	*d;
-
-	d = dcopy;
-	pthread_mutex_lock(&d->run_mutex);
-	if (d->run)
-	{
-		printf("Tempo de execução: %04i\n", ft_time(d));
-		//usleep(100);
-	}
-	pthread_mutex_unlock(&d->run_mutex);
-	return (0);
+	gettimeofday(&d->current_time, NULL);
+	return (((d->current_time.tv_sec * 1000 + d->current_time.tv_usec / 1000)
+			- (d->start_time.tv_sec * 1000 + d->start_time.tv_usec / 1000)));
 }
 
 void	ft_exit(char *str, t_data *d)
@@ -74,10 +59,8 @@ int	ft_getint(char *arg, int position)
 
 void	ft_init_values(int argc, char **argv, t_data *d)
 {
-	int				i;
-
-	i = -1;
 	d->philo = NULL;
+	d->tid = -1;
 	if (argc < 5 || argc > 6)
 		ft_exit("Please insert correct number of args...\n", NULL);
 	d->var.philos = ft_getint(argv[1], 0);
@@ -91,13 +74,7 @@ void	ft_init_values(int argc, char **argv, t_data *d)
 	d->philo = malloc(sizeof(t_philo) * d->var.philos);
 	if (!d->philo)
 		ft_exit("Error allocating memory for philo\n", NULL);
-	pthread_mutex_init(&d->run_mutex, NULL);
-	gettimeofday(&d->time, NULL);
-	d->start_time = d->time.tv_usec;
-	while (++i < d->var.philos)
-		pthread_create(&d->philo[i].thread, NULL, &ft_thread_run, (void *)d);
-	while (--i > -1)
-		pthread_join(d->philo[i].thread, NULL);
+	ft_init_threads(d);
 }
 
 int	main(int argc, char **argv)
