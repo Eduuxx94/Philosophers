@@ -6,7 +6,7 @@
 /*   By: ede-alme <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/27 10:35:25 by ede-alme          #+#    #+#             */
-/*   Updated: 2022/08/11 11:58:15 by ede-alme         ###   ########.fr       */
+/*   Updated: 2022/08/12 20:58:01 by ede-alme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ typedef struct s_var {
 typedef struct s_philo {
 	t_data			*d;
 	pthread_t		thread;
+	pthread_mutex_t	mutex;
 	int				id;
 	int				forks;
 	int				life;
@@ -41,6 +42,7 @@ typedef struct s_philo {
 
 struct s_data {
 	int				exit;
+	int				anydead;
 	t_var			var;
 	t_philo			*philo;
 	struct timeval	start_time;

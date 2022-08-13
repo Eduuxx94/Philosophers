@@ -6,7 +6,7 @@
 /*   By: ede-alme <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 20:05:52 by ede-alme          #+#    #+#             */
-/*   Updated: 2022/08/11 14:38:19 by ede-alme         ###   ########.fr       */
+/*   Updated: 2022/08/12 11:46:45 by ede-alme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,6 @@ int	ft_getint(char *arg, int position, t_data *d)
 	long long	value;
 
 	i = 0;
-	if (position == 0 && arg[0] == '0')
-		ft_exit("Error, please insert valid argument: >= 1\n", NULL, &d->exit);
 	while (arg[i])
 		i++;
 	i = i - position;
@@ -50,20 +48,22 @@ int	ft_getint(char *arg, int position, t_data *d)
 		value = (arg[position] - 48);
 		while (i-- >= 2)
 			value = value * 10;
-		value = value + ft_getint(arg, ++position, d);
-		if (value > 2147483647)
+		value = value + ft_getint(arg, (1 + position), d);
+		if (value > 2147483647 && d->exit++)
 			ft_exit(NULL, NULL, &d->exit);
 	}
-	else
-		ft_exit("Argument error...\n", NULL, &d->exit);
+	else if (d->exit++)
+		ft_exit(NULL, NULL, &d->exit);
+	if (position == 0 && value <= 0 && d->exit++)
+		ft_exit(NULL, NULL, &d->exit);
 	return (value);
 }
 
 void	ft_init_values(int argc, char **argv, t_data *d)
 {
 	d->philo = NULL;
-	if (argc < 5 || argc > 6)
-		ft_exit("Please insert correct number of args...\n", NULL, &d->exit);
+	if ((argc < 5 || argc > 6) && printf("Incorrect number of args...\n"))
+		return ;
 	d->var.philos = ft_getint(argv[1], 0, d);
 	d->var.die_t = ft_getint(argv[2], 0, d);
 	d->var.eat_t = ft_getint(argv[3], 0, d);
@@ -71,11 +71,12 @@ void	ft_init_values(int argc, char **argv, t_data *d)
 	d->var.nbr_eats = 2147483647;
 	d->start_time.tv_sec = 0;
 	d->run = 0;
+	d->anydead = 0;
 	if (argc == 6)
 		d->var.nbr_eats = ft_getint(argv[5], 0, d);
 	d->philo = malloc(sizeof(t_philo) * d->var.philos);
-	if (!d->philo)
-		ft_exit("Error allocating memory for philo\n", NULL, &d->exit);
+	if (!d->philo && printf("Allocate memory failed\n"))
+		return ;
 	if (!d->exit)
 		ft_init_threads(d);
 	else
@@ -89,7 +90,6 @@ int	main(int argc, char **argv)
 	d.philo = NULL;
 	d.exit = 0;
 	ft_init_values(argc, argv, &d);
-	printf("O numero do é %i\n", d.exit);
 	if (d.philo)
 		ft_exit(0, &d, &d.exit);
 	else
