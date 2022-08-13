@@ -6,7 +6,7 @@
 #    By: ede-alme <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/27 08:39:14 by ede-alme          #+#    #+#              #
-#    Updated: 2022/08/06 18:46:42 by ede-alme         ###   ########.fr        #
+#    Updated: 2022/08/13 11:57:31 by ede-alme         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,7 @@ SRC = $(addprefix $(SRC_PATH), $(SRC_NAME))
 OBJ = $(addprefix $(OBJ_PATH), $(OBJ_NAME))
 
 CC = gcc
-CFLAGS = -g -fsanitize=$(FLAG) -pthread -Wall -Wextra -Werror
+CFLAGS = -g -fsanitize=$(FLAG) -lpthread -Wall -Wextra -Werror
 FLAG = thread
 
 ARGS = 5 100 30 30

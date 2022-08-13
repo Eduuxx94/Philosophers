@@ -6,7 +6,7 @@
 /*   By: ede-alme <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/27 10:35:25 by ede-alme          #+#    #+#             */
-/*   Updated: 2022/08/12 20:58:01 by ede-alme         ###   ########.fr       */
+/*   Updated: 2022/08/13 13:55:23 by ede-alme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,8 @@ typedef struct s_philo {
 	int				id;
 	int				forks;
 	int				life;
-	int				eat_exec;
+	int				last_meal;
+	int				last_sleep;
 
 }		t_philo;
 

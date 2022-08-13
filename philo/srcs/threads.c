@@ -6,33 +6,77 @@
 /*   By: ede-alme <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/06 18:42:34 by ede-alme          #+#    #+#             */
-/*   Updated: 2022/08/12 22:21:30 by ede-alme         ###   ########.fr       */
+/*   Updated: 2022/08/13 14:30:24 by ede-alme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+int	ft_givefork(t_philo *p)
+{
+	int	getpear;
+
+	getpear = 0;
+	if (p->id != (p->d->var.philos - 1))
+		getpear = p->id + 1;
+	pthread_mutex_lock(&p->mutex);
+	if (p->forks == 2 && p->forks--)
+	{
+		pthread_mutex_unlock(&p->mutex);
+		pthread_mutex_lock(&p->d->philo[getpear].mutex);
+		if (p->d->philo[getpear].forks == 0 && p->d->philo[getpear].forks++)
+		{
+			pthread_mutex_unlock(&p->d->philo[getpear].mutex); //perceber porque não está a chegar aqui...
+			return (1);
+		}
+		else
+		{
+			pthread_mutex_unlock(&p->d->philo[getpear].mutex);
+			pthread_mutex_lock(&p->mutex);
+			p->forks++;
+			pthread_mutex_unlock(&p->mutex);
+		}
+	}
+	else
+		pthread_mutex_unlock(&p->mutex);
+	return (0);
+}
+
+int	ft_keep_getforks(t_philo *p, int getpear)
+{
+	pthread_mutex_unlock(&p->d->philo[getpear].mutex);
+	pthread_mutex_lock(&p->mutex);
+	p->forks--;
+	pthread_mutex_unlock(&p->mutex);
+	return (0);
+}
 
 int	ft_getforks(t_philo *p)
 {
 	int	getpear;
 
 	getpear = 0;
-	if (p->d->var.philos == 1)
-		return (0);
 	if (p->id != (p->d->var.philos - 1))
 		getpear = p->id + 1;
-	//pthread_mutex_lock(&p->mutex);
-	//pthread_mutex_lock(&p->d->philo[getpear].mutex);
-	if (p->forks == 1 && p->d->philo[getpear].forks == 1)
+	pthread_mutex_lock(&p->mutex);
+	if (p->d->var.philos > 1 && p->forks == 1 && p->forks++)
 	{
-		pthread_mutex_lock(&p->d->run_lock);
-		p->forks++;
-		p->d->philo[getpear].forks--;
-		pthread_mutex_unlock(&p->d->run_lock);
-		return (1);
+		pthread_mutex_unlock(&p->mutex);
+		pthread_mutex_lock(&p->d->philo[getpear].mutex);
+		if (p->d->philo[getpear].forks == 1 && p->d->philo[getpear].forks--)
+		{
+			pthread_mutex_lock(&p->d->run_lock);
+			printf("%05i	%02i	has taken a fork\n", ft_time(p->d), p->id);
+			pthread_mutex_unlock(&p->d->run_lock);
+			p->life = ft_time(p->d) + p->d->var.die_t;
+			pthread_mutex_unlock(&p->d->philo[getpear].mutex);
+			return (1);
+		}
+		else
+			ft_keep_getforks(p, getpear);
 	}
-	//pthread_mutex_unlock(&p->d->philo[getpear].mutex);
-	//pthread_mutex_unlock(&p->mutex);
+	else
+		pthread_mutex_unlock(&p->mutex);
 	return (0);
 }
 
@@ -45,7 +89,8 @@ int	ft_checkdeath(t_philo *p)
 	if (p->life < ft_time(p->d) && !p->d->anydead)
 	{
 		p->d->anydead = 1;
-		printf("%05i	%02i	died\n", ft_time(p->d), p->id);
+		usleep(100);
+		printf("%05i	%02i	died\n", ft_time(p->d), (p->id + 1));
 	}
 	result = p->d->anydead;
 	pthread_mutex_unlock(&p->d->run_lock);
@@ -59,12 +104,35 @@ void	ft_run_threads(t_philo *p)
 		//pthread_mutex_lock(&p->d->run_lock);
 		if (ft_getforks(p))
 		{
-			printf("%i Pegou os talheres\n", p->id);
-			return ;
+			pthread_mutex_lock(&p->d->run_lock);
+			printf("%05i	%02i	is eating\n", ft_time(p->d), p->id);
+			p->last_meal = ft_time(p->d);
+			pthread_mutex_unlock(&p->d->run_lock);
+			while (ft_time(p->d) <= p->d->var.eat_t + p->last_meal)
+			{
+				if (ft_checkdeath(p))
+					return ;
+				usleep(100);
+			}
+			if (ft_givefork(p) && !ft_checkdeath(p))
+			{
+				pthread_mutex_lock(&p->d->run_lock);
+				printf("%05i	%02i	is sleeping\n", ft_time(p->d), p->id);
+				p->last_sleep = ft_time(p->d);
+				pthread_mutex_unlock(&p->d->run_lock);
+				while (ft_time(p->d) <= p->d->var.sleep_t + p->last_sleep)
+				{
+					if (ft_checkdeath(p))
+						return ;
+					usleep(100);
+				}
+				printf("%05i	%02i	is thinking\n", ft_time(p->d), p->id);
+			}
 		}
 		else
-			printf("%i Tentou pegar os talheres\n", p->id);
-		usleep(20);
+		{
+			//printf("%i Tentou pegar os talheres\n", p->id);
+		}
 		//pthread_mutex_unlock(&p->d->run_lock);
 	}
 	else
@@ -76,7 +144,6 @@ int	is_run(t_data	*d, int id)
 {
 	int	i;
 
-	printf("Passou por aqui\n");
 	pthread_mutex_lock(&d->run_lock);
 	if (id == (d->var.philos - 1))
 	{
