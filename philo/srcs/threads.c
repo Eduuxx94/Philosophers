@@ -6,7 +6,7 @@
 /*   By: ede-alme <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/06 18:42:34 by ede-alme          #+#    #+#             */
-/*   Updated: 2022/08/13 14:30:24 by ede-alme         ###   ########.fr       */
+/*   Updated: 2022/08/13 20:50:46 by ede-alme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,18 +24,9 @@ int	ft_givefork(t_philo *p)
 	{
 		pthread_mutex_unlock(&p->mutex);
 		pthread_mutex_lock(&p->d->philo[getpear].mutex);
-		if (p->d->philo[getpear].forks == 0 && p->d->philo[getpear].forks++)
-		{
-			pthread_mutex_unlock(&p->d->philo[getpear].mutex); //perceber porque não está a chegar aqui...
-			return (1);
-		}
-		else
-		{
-			pthread_mutex_unlock(&p->d->philo[getpear].mutex);
-			pthread_mutex_lock(&p->mutex);
-			p->forks++;
-			pthread_mutex_unlock(&p->mutex);
-		}
+		p->d->philo[getpear].forks++;
+		pthread_mutex_unlock(&p->d->philo[getpear].mutex); //perceber porque não está a chegar aqui...
+		return (1);
 	}
 	else
 		pthread_mutex_unlock(&p->mutex);
@@ -68,7 +59,7 @@ int	ft_getforks(t_philo *p)
 			pthread_mutex_lock(&p->d->run_lock);
 			printf("%05i	%02i	has taken a fork\n", ft_time(p->d), p->id);
 			pthread_mutex_unlock(&p->d->run_lock);
-			p->life = ft_time(p->d) + p->d->var.die_t;
+			p->life = (ft_time(p->d) + p->d->var.die_t);
 			pthread_mutex_unlock(&p->d->philo[getpear].mutex);
 			return (1);
 		}
@@ -89,7 +80,7 @@ int	ft_checkdeath(t_philo *p)
 	if (p->life < ft_time(p->d) && !p->d->anydead)
 	{
 		p->d->anydead = 1;
-		usleep(100);
+		usleep(1000);
 		printf("%05i	%02i	died\n", ft_time(p->d), (p->id + 1));
 	}
 	result = p->d->anydead;
@@ -99,44 +90,35 @@ int	ft_checkdeath(t_philo *p)
 
 void	ft_run_threads(t_philo *p)
 {
-	if (!ft_checkdeath(p))
+	if (!ft_checkdeath(p) && ft_getforks(p))
 	{
-		//pthread_mutex_lock(&p->d->run_lock);
-		if (ft_getforks(p))
+		pthread_mutex_lock(&p->d->run_lock);
+		printf("%05i	%02i	is eating\n", ft_time(p->d), p->id);
+		p->last_meal = ft_time(p->d);
+		pthread_mutex_unlock(&p->d->run_lock);
+		while (ft_time(p->d) <= p->d->var.eat_t + p->last_meal)
+		{
+			if (ft_checkdeath(p))
+				return ;
+			usleep(100);
+		}
+		if (ft_givefork(p) && !ft_checkdeath(p))
 		{
 			pthread_mutex_lock(&p->d->run_lock);
-			printf("%05i	%02i	is eating\n", ft_time(p->d), p->id);
-			p->last_meal = ft_time(p->d);
+			printf("%05i	%02i	is sleeping\n", ft_time(p->d), p->id);
+			p->last_sleep = ft_time(p->d);
 			pthread_mutex_unlock(&p->d->run_lock);
-			while (ft_time(p->d) <= p->d->var.eat_t + p->last_meal)
+			while (ft_time(p->d) <= p->d->var.sleep_t + p->last_sleep)
 			{
 				if (ft_checkdeath(p))
 					return ;
 				usleep(100);
 			}
-			if (ft_givefork(p) && !ft_checkdeath(p))
-			{
-				pthread_mutex_lock(&p->d->run_lock);
-				printf("%05i	%02i	is sleeping\n", ft_time(p->d), p->id);
-				p->last_sleep = ft_time(p->d);
-				pthread_mutex_unlock(&p->d->run_lock);
-				while (ft_time(p->d) <= p->d->var.sleep_t + p->last_sleep)
-				{
-					if (ft_checkdeath(p))
-						return ;
-					usleep(100);
-				}
-				printf("%05i	%02i	is thinking\n", ft_time(p->d), p->id);
-			}
+			printf("%05i	%02i	is thinking\n", ft_time(p->d), p->id);
 		}
-		else
-		{
-			//printf("%i Tentou pegar os talheres\n", p->id);
-		}
-		//pthread_mutex_unlock(&p->d->run_lock);
 	}
 	else
-		return ;
+		return ; //esta linha tem que ser removida, mas se eu remover da erro SEGV, tentar perceber porque... Provavelmente entra numa variavel que nao existe erro a indexar o caminho das forks...
 	ft_run_threads(p);
 }
 
