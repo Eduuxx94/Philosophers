@@ -6,7 +6,7 @@
 #    By: ede-alme <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/27 08:39:14 by ede-alme          #+#    #+#              #
-#    Updated: 2022/08/13 11:57:31 by ede-alme         ###   ########.fr        #
+#    Updated: 2022/08/15 18:00:29 by ede-alme         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,6 +18,7 @@ INC_PATH = ./includes/
 
 SRC_NAME = main.c \
 			threads.c \
+			utils.c \
 
 OBJ_NAME = $(SRC_NAME:.c=.o)
 

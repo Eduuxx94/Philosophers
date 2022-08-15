@@ -6,7 +6,7 @@
 /*   By: ede-alme <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/27 10:35:25 by ede-alme          #+#    #+#             */
-/*   Updated: 2022/08/13 13:55:23 by ede-alme         ###   ########.fr       */
+/*   Updated: 2022/08/15 21:08:43 by ede-alme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,14 @@ typedef struct s_var {
 	int	eat_t;
 	int	sleep_t;
 	int	nbr_eats;
+	int	unlimited;
 }		t_var;
 
 typedef struct s_philo {
 	t_data			*d;
 	pthread_t		thread;
 	pthread_mutex_t	mutex;
+	int				times_eated;
 	int				id;
 	int				forks;
 	int				life;
@@ -58,10 +60,15 @@ int		ft_getint(char *arg, int position, t_data *d);
 void	ft_init_values(int argc, char **argv, t_data *d);
 int		main(int argc, char **argv);
 
-//Threads Functions
+//Threads file functions
 void	ft_run_threads(t_philo *p);
-int		is_run(t_data	*d, int id);
 void	*ft_begin(void *philo);
 void	ft_init_threads(t_data *d);
+
+//utils file functions
+int		ft_givefork(t_philo *p);
+int		ft_getforks(t_philo *p);
+int		is_run(t_data	*d, int id);
+int		ft_checkdeath(t_philo *p);
 
 #endif

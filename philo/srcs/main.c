@@ -6,7 +6,7 @@
 /*   By: ede-alme <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 20:05:52 by ede-alme          #+#    #+#             */
-/*   Updated: 2022/08/12 11:46:45 by ede-alme         ###   ########.fr       */
+/*   Updated: 2022/08/15 21:27:52 by ede-alme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ void	ft_init_values(int argc, char **argv, t_data *d)
 	d->start_time.tv_sec = 0;
 	d->run = 0;
 	d->anydead = 0;
-	if (argc == 6)
+	if (argc == 6 && d->var.unlimited--)
 		d->var.nbr_eats = ft_getint(argv[5], 0, d);
 	d->philo = malloc(sizeof(t_philo) * d->var.philos);
 	if (!d->philo && printf("Allocate memory failed\n"))
@@ -89,6 +89,7 @@ int	main(int argc, char **argv)
 
 	d.philo = NULL;
 	d.exit = 0;
+	d.var.unlimited = 1;
 	ft_init_values(argc, argv, &d);
 	if (d.philo)
 		ft_exit(0, &d, &d.exit);
