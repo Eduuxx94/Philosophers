@@ -6,7 +6,7 @@
 /*   By: ede-alme <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 17:59:24 by ede-alme          #+#    #+#             */
-/*   Updated: 2022/08/15 20:38:27 by ede-alme         ###   ########.fr       */
+/*   Updated: 2022/08/16 15:15:36 by ede-alme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,15 @@ int	ft_givefork(t_philo *p)
 	return (0);
 }
 
+int	ft_keep_getforks(t_philo *p, int getpear)
+{
+	if (!ft_checkdeath(p))
+		printf("%05i %02i has taken a fork\n", ft_time(p->d), (p->id + 1));
+	p->life = (ft_time(p->d) + p->d->var.die_t);
+	pthread_mutex_unlock(&p->d->philo[getpear].mutex);
+	return (1);
+}
+
 int	ft_getforks(t_philo *p)
 {
 	int	getpear;
@@ -46,13 +55,7 @@ int	ft_getforks(t_philo *p)
 		pthread_mutex_unlock(&p->mutex);
 		pthread_mutex_lock(&p->d->philo[getpear].mutex);
 		if (p->d->philo[getpear].forks == 1 && p->d->philo[getpear].forks--)
-		{
-			if(!ft_checkdeath(p))
-				printf("%05i %02i has taken a fork\n", ft_time(p->d), (p->id + 1));
-			p->life = (ft_time(p->d) + p->d->var.die_t);
-			pthread_mutex_unlock(&p->d->philo[getpear].mutex);
-			return (1);
-		}
+			return (ft_keep_getforks(p, getpear));
 		else
 		{
 			pthread_mutex_unlock(&p->d->philo[getpear].mutex);

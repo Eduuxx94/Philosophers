@@ -6,7 +6,7 @@
 /*   By: ede-alme <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/27 10:35:25 by ede-alme          #+#    #+#             */
-/*   Updated: 2022/08/15 21:08:43 by ede-alme         ###   ########.fr       */
+/*   Updated: 2022/08/16 15:15:51 by ede-alme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ void	ft_init_threads(t_data *d);
 
 //utils file functions
 int		ft_givefork(t_philo *p);
+int		ft_keep_getforks(t_philo *p, int getpear);
 int		ft_getforks(t_philo *p);
 int		is_run(t_data	*d, int id);
 int		ft_checkdeath(t_philo *p);
