@@ -6,7 +6,7 @@
 /*   By: ede-alme <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/06 18:42:34 by ede-alme          #+#    #+#             */
-/*   Updated: 2022/08/15 22:00:29 by ede-alme         ###   ########.fr       */
+/*   Updated: 2022/08/16 15:46:21 by ede-alme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,5 +76,8 @@ void	ft_init_threads(t_data *d)
 		pthread_create(&d->philo[i].thread, 0, &ft_begin, (void *)&d->philo[i]);
 	}
 	while (--i > -1)
+	{
 		pthread_join(d->philo[i].thread, NULL);
+		phtread_mutex_destroy(d->philo[i].thread);
+	}
 }
