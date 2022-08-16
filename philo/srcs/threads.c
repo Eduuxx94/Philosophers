@@ -12,6 +12,22 @@
 
 #include "philo.h"
 
+int	ft_think(t_philo *p)
+{
+	if (ft_checkdeath(p))
+		return (1);
+	printf("%i %i is thinking\n", ft_time(p->d), (p->id + 1));
+	if (p->d->var.philos % 2 == 1)
+	{
+		if (!ft_checkdeath(p))
+			p->last_thinking = ft_time(p->d);
+		while (ft_time(p->d) < p->d->var.eat_t / 2 + p->last_thinking)
+			if (ft_checkdeath(p))
+				return (1);
+	}
+	return (0);
+}
+
 void	ft_run_threads(t_philo *p)
 {
 	while (!ft_checkdeath(p) && p->times_eated < p->d->var.nbr_eats)
@@ -19,9 +35,9 @@ void	ft_run_threads(t_philo *p)
 		if (ft_getforks(p))
 		{
 			if (!ft_checkdeath(p))
-				printf("%05i %02i is eating\n", ft_time(p->d), (p->id + 1));
+				printf("%i %i is eating\n", ft_time(p->d), (p->id + 1));
 			p->last_meal = ft_time(p->d);
-			while (ft_time(p->d) <= p->d->var.eat_t + p->last_meal)
+			while (ft_time(p->d) < p->d->var.eat_t + p->last_meal)
 				if (ft_checkdeath(p))
 					return ;
 			if (++p->times_eated == p->d->var.nbr_eats && p->d->var.unlimited)
@@ -30,13 +46,13 @@ void	ft_run_threads(t_philo *p)
 		if (ft_givefork(p))
 		{
 			if (!ft_checkdeath(p))
-				printf("%05i %02i is sleeping\n", ft_time(p->d), (p->id + 1));
+				printf("%i %i is sleeping\n", ft_time(p->d), (p->id + 1));
 			p->last_sleep = ft_time(p->d);
-			while (ft_time(p->d) <= p->d->var.sleep_t + p->last_sleep)
+			while (ft_time(p->d) < p->d->var.sleep_t + p->last_sleep)
 				if (ft_checkdeath(p))
 					return ;
-			if (!ft_checkdeath(p))
-				printf("%05i %02i is thinking\n", ft_time(p->d), (p->id + 1));
+			if (ft_think(p))
+				return ;
 		}
 	}
 }
@@ -50,10 +66,6 @@ void	*ft_begin(void *philo)
 	{
 		if (p->d->start_time.tv_sec)
 			break ;
-		if (p->d->var.philos >= 20 && p->d->var.philos <= 500)
-			usleep(20000);
-		if (p->d->var.philos >= 500)
-			usleep(55000);
 	}
 	p->life = 0 + p->d->var.die_t;
 	ft_run_threads(p);
@@ -76,8 +88,7 @@ void	ft_init_threads(t_data *d)
 		pthread_create(&d->philo[i].thread, 0, &ft_begin, (void *)&d->philo[i]);
 	}
 	while (--i > -1)
-	{
 		pthread_join(d->philo[i].thread, NULL);
-		phtread_mutex_destroy(d->philo[i].thread);
-	}
+	while (++i < d->var.philos)
+		pthread_mutex_destroy(&d->philo[i].mutex);
 }

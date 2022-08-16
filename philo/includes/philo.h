@@ -40,6 +40,7 @@ typedef struct s_philo {
 	int				life;
 	int				last_meal;
 	int				last_sleep;
+	int				last_thinking;
 
 }		t_philo;
 

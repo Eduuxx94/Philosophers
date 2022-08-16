@@ -29,7 +29,7 @@ CC = gcc
 CFLAGS = -g -fsanitize=$(FLAG) -lpthread -Wall -Wextra -Werror
 FLAG = thread
 
-ARGS = 5 100 30 30
+ARGS = 5 800 200 200
 
 $(OBJ_PATH)%.o:$(SRC_PATH)%.c
 	@mkdir -p $(OBJ_PATH)
@@ -39,6 +39,7 @@ $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o $@
 
 all: $(NAME)
+
 valgrind: fclean 
 	gcc -g -Wall -Wextra -Werror -pthread -I $(INC_PATH) $(SRC) -o ./philo
 	valgrind -s --leak-check=full --show-leak-kinds=all ./philo $(ARGS)

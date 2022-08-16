@@ -36,7 +36,7 @@ int	ft_givefork(t_philo *p)
 int	ft_keep_getforks(t_philo *p, int getpear)
 {
 	if (!ft_checkdeath(p))
-		printf("%05i %02i has taken a fork\n", ft_time(p->d), (p->id + 1));
+		printf("%i %i has taken a fork\n", ft_time(p->d), (p->id + 1));
 	p->life = (ft_time(p->d) + p->d->var.die_t);
 	pthread_mutex_unlock(&p->d->philo[getpear].mutex);
 	return (1);
@@ -93,8 +93,7 @@ int	ft_checkdeath(t_philo *p)
 	{
 		p->d->anydead = 1;
 		pthread_mutex_unlock(&p->d->run_lock);
-		usleep(100);
-		printf("%05i %02i died\n", ft_time(p->d), (p->id + 1));
+		printf("%i %i died\n", ft_time(p->d), (p->id + 1));
 		return (1);
 	}
 	result = p->d->anydead;
